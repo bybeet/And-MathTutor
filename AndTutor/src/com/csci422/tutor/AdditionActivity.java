@@ -8,6 +8,10 @@ import android.content.Intent;
 import android.util.Log;
 import android.view.Menu;
 import android.widget.TextView;
+import android.view.GestureDetector;
+import android.view.GestureDetector.OnDoubleTapListener;
+import android.view.MotionEvent;
+import android.view.View;
 
 public class AdditionActivity extends Activity {
 
@@ -24,6 +28,7 @@ public class AdditionActivity extends Activity {
 	Random rand;
 	
 	ProblemType problemType;
+	GestureDetector gestures;
 	
 	
     @Override
@@ -36,6 +41,7 @@ public class AdditionActivity extends Activity {
         generatedNumber = (TextView)findViewById(R.id.startingNumber);
         userInput = (TextView)findViewById(R.id.userInput);
         goalNumber = (TextView)findViewById(R.id.goalNumber);
+        gestures = new GestureDetector(this, new GestureListener());
         String newTitle = intent.getStringExtra("title");
         rand = new Random();
         
@@ -95,5 +101,45 @@ public class AdditionActivity extends Activity {
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.activity_addition, menu);
         return true;
+    }
+    
+    @Override
+    public boolean onTouchEvent(MotionEvent e) {
+        return gestures.onTouchEvent(e);
+    }
+    
+    private class GestureListener implements GestureDetector.OnGestureListener{
+    	
+    	public boolean onDown(MotionEvent e) {
+			// TODO Auto-generated method stub
+			return false;
+		}
+
+		public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX,
+				float velocityY) {
+			// TODO Auto-generated method stub
+			return false;
+		}
+
+		public void onLongPress(MotionEvent e) {
+			generateProblem();
+		}
+
+		public boolean onScroll(MotionEvent e1, MotionEvent e2,
+				float distanceX, float distanceY) {
+			// TODO Auto-generated method stub
+			return false;
+		}
+
+		public void onShowPress(MotionEvent e) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		public boolean onSingleTapUp(MotionEvent e) {
+			// TODO Auto-generated method stub
+			return false;
+		}
+    	
     }
 }
