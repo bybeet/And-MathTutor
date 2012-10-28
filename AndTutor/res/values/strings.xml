@@ -7,5 +7,6 @@
     <string name="addition">Addition +</string>
     <string name="subtraction">Subtraction -</string>
     <string name="both">Both</string>
+    <string name="title_activity_addition">AdditionActivity</string>
 
 </resources>
