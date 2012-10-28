@@ -6,6 +6,7 @@
  * 			Down swipe
  * 			Plus sign
  * 			Minus sign
+ * 			http://stackoverflow.com/questions/4139288/android-how-to-handle-right-to-left-swipe-gestures
  * 
  * 	-Message for the user ( done in function testAnswer())
  * 			Correct answer
