@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.util.Log;
 import android.view.Menu;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.view.GestureDetector;
 import android.view.GestureDetector.OnDoubleTapListener;
 import android.view.MotionEvent;
@@ -24,6 +25,7 @@ public class AdditionActivity extends Activity {
 	
 	final int max = 15;
 	Integer goal;
+	Integer generated;
 	
 	Random rand;
 	
@@ -81,12 +83,12 @@ public class AdditionActivity extends Activity {
     }
     
     private void additionProblem() {
-    	Integer generated = goal - rand.nextInt(goal);
+    	generated = goal - rand.nextInt(goal);
     	generatedNumber.setText(generated.toString());
     }
     
     private void subtractionProblem() {
-    	Integer generated = goal + rand.nextInt(max - goal);
+    	generated = goal + rand.nextInt(max - goal);
     	generatedNumber.setText(generated.toString());
     }
     
@@ -95,6 +97,31 @@ public class AdditionActivity extends Activity {
     		additionProblem();
     	else
     		subtractionProblem();
+    }
+    
+    private boolean checkProblem(ProblemType addOrSub) {
+    	int userNumber = Integer.parseInt((String) userInput.getText());
+    	
+    	if(addOrSub == ProblemType.ADDITION){
+    		if( (generated + userNumber) == goal)
+    			return true;
+    	}
+    	else
+    		if( (generated - userNumber) == goal )
+    			return true;
+    	
+    	return false;
+    }
+    
+    private void testAnswer(ProblemType addOrSub) {
+    	if(checkProblem(addOrSub)) {
+    		//Give user input, maybe a toast?
+    		//Generate new problem
+    		generateProblem();
+    	}
+    	else {
+    		//give user input that they are wrong
+    	}
     }
 
     @Override
