@@ -7,20 +7,23 @@
 
     <Button 
     	android:layout_height="wrap_content"
-     	android:layout_width="wrap_content"
+     	android:layout_width="fill_parent"
      	android:id="@+id/addition"
+     	android:layout_weight="1"
     	android:text="@string/addition" />
     
     <Button 
     	android:layout_height="wrap_content"
-     android:layout_width="wrap_content"
+     android:layout_width="fill_parent"
      android:id="@+id/subtraction"
+     android:layout_weight="1"
      android:text="@string/subtraction" />
     
     <Button 
     	android:layout_height="wrap_content"
-     android:layout_width="wrap_content"
+     android:layout_width="fill_parent"
      android:text="@string/both"
+     android:layout_weight="1"
      android:id="@+id/both" />
 
 </LinearLayout>
