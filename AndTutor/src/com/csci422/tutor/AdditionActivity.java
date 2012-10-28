@@ -1,5 +1,7 @@
 package com.csci422.tutor;
 
+import java.util.Random;
+
 import android.os.Bundle;
 import android.app.Activity;
 import android.content.Intent;
@@ -12,6 +14,15 @@ public class AdditionActivity extends Activity {
 	private enum ProblemType {ADDITION, SUBTRACTION, BOTH};
 	
 	TextView title;
+	TextView generatedNumber;
+	TextView goalNumber;
+	TextView userInput;
+	
+	final int max = 15;
+	Integer goal;
+	
+	Random rand;
+	
 	ProblemType problemType;
 	
 	
@@ -22,7 +33,11 @@ public class AdditionActivity extends Activity {
         
         Intent intent = getIntent();
         title = (TextView)findViewById(R.id.title);
+        generatedNumber = (TextView)findViewById(R.id.startingNumber);
+        userInput = (TextView)findViewById(R.id.userInput);
+        goalNumber = (TextView)findViewById(R.id.goalNumber);
         String newTitle = intent.getStringExtra("title");
+        rand = new Random();
         
         if(newTitle.equals("add")){
         	title.setText(R.string.addition);
@@ -41,7 +56,39 @@ public class AdditionActivity extends Activity {
     }
     
     private void generateProblem() {
+    	userInput.setText("0");
     	
+    	goal = rand.nextInt(max);
+    	goalNumber.setText(goal.toString());
+    	
+    	switch(problemType){
+    	case ADDITION:
+    		additionProblem();
+    		break;
+    	case SUBTRACTION:
+    		subtractionProblem();
+    		break;
+    	case BOTH:
+    		bothProblem();
+    		break;
+    	}
+    }
+    
+    private void additionProblem() {
+    	Integer generated = goal - rand.nextInt(goal);
+    	generatedNumber.setText(generated.toString());
+    }
+    
+    private void subtractionProblem() {
+    	Integer generated = goal + rand.nextInt(max - goal);
+    	generatedNumber.setText(generated.toString());
+    }
+    
+    private void bothProblem() {
+    	if(rand.nextInt()%2 == 0)
+    		additionProblem();
+    	else
+    		subtractionProblem();
     }
 
     @Override
