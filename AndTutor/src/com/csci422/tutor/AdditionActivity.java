@@ -23,19 +23,22 @@
 
 package com.csci422.tutor;
 
+import java.util.ArrayList;
 import java.util.Random;
 
-import android.os.Bundle;
 import android.app.Activity;
 import android.content.Intent;
-import android.util.Log;
+import android.gesture.Gesture;
+import android.gesture.GestureLibrary;
+import android.gesture.GestureOverlayView;
+import android.gesture.GestureOverlayView.OnGesturePerformedListener;
+import android.gesture.Prediction;
+import android.os.Bundle;
+import android.view.GestureDetector;
 import android.view.Menu;
+import android.view.MotionEvent;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.view.GestureDetector;
-import android.view.GestureDetector.OnDoubleTapListener;
-import android.view.MotionEvent;
-import android.view.View;
 
 public class AdditionActivity extends Activity {
 
@@ -145,11 +148,13 @@ public class AdditionActivity extends Activity {
 		if(problemType == addOrSub || problemType == ProblemType.BOTH){
 			if(checkProblem(addOrSub)) {
 				//Give user input, maybe a toast?
+				correctAnswer();
 				//Generate new problem
 				generateProblem();
 			}
 			else {
 				//give user input that they are wrong
+				incorrectAnswer();
 			}
 		}
 		else
@@ -161,6 +166,14 @@ public class AdditionActivity extends Activity {
 			}
 	}
 
+	private void correctAnswer( ){
+		Toast.makeText( this, "That answer is correct.", Toast.LENGTH_LONG ).show();
+	}
+	
+	private void incorrectAnswer( ){
+		Toast.makeText( this, "That answer is incorrect.", Toast.LENGTH_LONG ).show();
+	}
+	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		getMenuInflater().inflate(R.menu.activity_addition, menu);
@@ -172,8 +185,9 @@ public class AdditionActivity extends Activity {
 		return gestures.onTouchEvent(e);
 	}
 
-	private class GestureListener implements GestureDetector.OnGestureListener{
-
+	private class GestureListener implements GestureDetector.OnGestureListener, OnGesturePerformedListener{
+		GestureLibrary mLibrary;
+		
 		public boolean onDown(MotionEvent e) {
 			// TODO Auto-generated method stub
 			return false;
@@ -186,7 +200,7 @@ public class AdditionActivity extends Activity {
 		}
 
 		public void onLongPress(MotionEvent e) {
-			generateProblem();
+			//generateProblem();
 		}
 
 		public boolean onScroll(MotionEvent e1, MotionEvent e2,
@@ -203,6 +217,25 @@ public class AdditionActivity extends Activity {
 		public boolean onSingleTapUp(MotionEvent e) {
 			// TODO Auto-generated method stub
 			return false;
+		}
+
+		public void onGesturePerformed(GestureOverlayView arg0, Gesture gesture) {
+			// TODO Auto-generated method stub
+			ArrayList<Prediction> predictions = mLibrary.recognize(gesture);
+			
+			if (predictions.size() > 0 && predictions.get(0).score > 1.0) {
+			     String result = predictions.get(0).name;
+
+			     if ("Plus".equalsIgnoreCase(result)) {
+			    	 testAnswer(ProblemType.ADDITION);
+			     }else if ("Minus".equalsIgnoreCase(result)) {
+			    	 testAnswer(ProblemType.SUBTRACTION);
+			     }else if ("Up Swipe".equalsIgnoreCase(result)) {
+					 generated++;
+			     }else if ("Down Swipe".equalsIgnoreCase(result)) {
+			    	 generated--;
+			     }
+			   }
 		}
 
 	}
