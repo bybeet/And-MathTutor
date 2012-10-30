@@ -29,18 +29,22 @@ import java.util.Random;
 import android.app.Activity;
 import android.content.Intent;
 import android.gesture.Gesture;
+import android.gesture.GestureLibraries;
 import android.gesture.GestureLibrary;
 import android.gesture.GestureOverlayView;
 import android.gesture.GestureOverlayView.OnGesturePerformedListener;
 import android.gesture.Prediction;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.view.GestureDetector;
 import android.view.Menu;
 import android.view.MotionEvent;
+import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class AdditionActivity extends Activity {
+public class AdditionActivity extends Activity implements OnGesturePerformedListener {
 
 	private enum ProblemType {ADDITION, SUBTRACTION, BOTH};
 
@@ -48,16 +52,22 @@ public class AdditionActivity extends Activity {
 	TextView generatedNumber;
 	TextView goalNumber;
 	TextView userInput;
+	TextView uiCounter;
+	View view;
 
 	//Maybe add a setting option to change this.
 	final int max = 15;
 	Integer goal;
 	Integer generated;
+	Integer userNumber;
+	int counter;
+	int numberToSolve;
 
 	Random rand;
 
 	ProblemType problemType;
-	GestureDetector gestures;
+	GestureOverlayView gestures;
+	GestureLibrary mLibrary;
 
 
 	@Override
@@ -66,13 +76,26 @@ public class AdditionActivity extends Activity {
 		setContentView(R.layout.activity_addition);
 
 		Intent intent = getIntent();
+		view = findViewById(R.id.goalNumber);
 		title = (TextView)findViewById(R.id.title);
 		generatedNumber = (TextView)findViewById(R.id.startingNumber);
 		userInput = (TextView)findViewById(R.id.userInput);
 		goalNumber = (TextView)findViewById(R.id.goalNumber);
-		gestures = new GestureDetector(this, new GestureListener());
+		uiCounter = (TextView)findViewById(R.id.uiCounter);
 		String newTitle = intent.getStringExtra("title");
 		rand = new Random();
+		userNumber = 0;
+		goal = 0;
+		counter = 0;
+		numberToSolve = 5;
+
+		mLibrary = GestureLibraries.fromRawResource(this, R.raw.gestures);
+		if (!mLibrary.load()) {
+			finish();
+		}
+
+		GestureOverlayView gestures = (GestureOverlayView) findViewById(R.id.gestures);
+		gestures.addOnGesturePerformedListener(this);
 
 		if(newTitle.equals("add")){
 			title.setText(R.string.addition);
@@ -91,9 +114,19 @@ public class AdditionActivity extends Activity {
 	}
 
 	private void generateProblem() {
-		userInput.setText("0");
+		
+		uiCounter.setText("Solved " + counter + "/" + numberToSolve);
+		
+		if(counter == numberToSolve){
+			this.finish();
+		}
+		
+		userInput.setText(userNumber.toString());
 
 		goal = rand.nextInt(max);
+		while(goal <= 0) {
+			goal = rand.nextInt(max);
+		}
 		goalNumber.setText(goal.toString());
 
 		switch(problemType){
@@ -148,8 +181,7 @@ public class AdditionActivity extends Activity {
 		if(problemType == addOrSub || problemType == ProblemType.BOTH){
 			if(checkProblem(addOrSub)) {
 				//Give user input, maybe a toast?
-				correctAnswer();
-				//Generate new problem
+				correctAnswer();	
 				generateProblem();
 			}
 			else {
@@ -159,84 +191,52 @@ public class AdditionActivity extends Activity {
 		}
 		else
 			if(addOrSub == ProblemType.ADDITION){
-				Toast.makeText(this, "This is a subtraction - problem.", Toast.LENGTH_LONG).show();
+				Toast.makeText(this, "This is a subtraction - problem.", Toast.LENGTH_SHORT).show();
 			}
 			else{
-				Toast.makeText(this, "This is an addition + problem.", Toast.LENGTH_LONG).show();
+				Toast.makeText(this, "This is an addition + problem.", Toast.LENGTH_SHORT).show();
 			}
 	}
 
 	private void correctAnswer( ){
-		Toast.makeText( this, "That answer is correct.", Toast.LENGTH_LONG ).show();
+		Toast.makeText( this, "That answer is correct, =D", Toast.LENGTH_LONG ).show();		
+		counter++;
 	}
-	
+
 	private void incorrectAnswer( ){
-		Toast.makeText( this, "That answer is incorrect.", Toast.LENGTH_LONG ).show();
+		Toast.makeText( this, "That answer is incorrect, =(", Toast.LENGTH_LONG ).show();
 	}
-	
+
+	private void updateUserInput() {
+		userInput.setText(userNumber.toString());
+	}
+
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		getMenuInflater().inflate(R.menu.activity_addition, menu);
 		return true;
 	}
 
-	@Override
-	public boolean onTouchEvent(MotionEvent e) {
-		return gestures.onTouchEvent(e);
-	}
+	public void onGesturePerformed(GestureOverlayView overlay, Gesture gesture) {
+		// TODO Auto-generated method stub
+		// TODO Auto-generated method stub
+		ArrayList<Prediction> predictions = new ArrayList<Prediction>();
+		predictions = mLibrary.recognize(gesture);
 
-	private class GestureListener implements GestureDetector.OnGestureListener, OnGesturePerformedListener{
-		GestureLibrary mLibrary;
-		
-		public boolean onDown(MotionEvent e) {
-			// TODO Auto-generated method stub
-			return false;
+		if (predictions.size() > 0 && predictions.get(0).score > 1.0) {
+			String result = predictions.get(0).name;
+
+			if ("Plus".equalsIgnoreCase(result) || "Plus Sign 2".equalsIgnoreCase(result)) {
+				testAnswer(ProblemType.ADDITION);
+			}else if ("Minus".equalsIgnoreCase(result)) {
+				testAnswer(ProblemType.SUBTRACTION);
+			}else if ("Up Swipe".equalsIgnoreCase(result)) {
+				userNumber++;
+				updateUserInput();
+			}else if ("Down Swipe".equalsIgnoreCase(result)) {
+				userNumber--;
+				updateUserInput();
+			}
 		}
-
-		public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX,
-				float velocityY) {
-			// TODO Auto-generated method stub
-			return false;
-		}
-
-		public void onLongPress(MotionEvent e) {
-			//generateProblem();
-		}
-
-		public boolean onScroll(MotionEvent e1, MotionEvent e2,
-				float distanceX, float distanceY) {
-			// TODO Auto-generated method stub
-			return false;
-		}
-
-		public void onShowPress(MotionEvent e) {
-			// TODO Auto-generated method stub
-
-		}
-
-		public boolean onSingleTapUp(MotionEvent e) {
-			// TODO Auto-generated method stub
-			return false;
-		}
-
-		public void onGesturePerformed(GestureOverlayView arg0, Gesture gesture) {
-			// TODO Auto-generated method stub
-			ArrayList<Prediction> predictions = mLibrary.recognize(gesture);
-			
-			if (predictions.size() > 0 && predictions.get(0).score > 1.0) {
-			     String result = predictions.get(0).name;
-
-			     if ("Plus".equalsIgnoreCase(result)) {
-			    	 testAnswer(ProblemType.ADDITION);
-			     }else if ("Minus".equalsIgnoreCase(result)) {
-			    	 testAnswer(ProblemType.SUBTRACTION);
-			     }else if ("Up Swipe".equalsIgnoreCase(result)) {
-					 generated++;
-			     }else if ("Down Swipe".equalsIgnoreCase(result)) {
-			    	 generated--;
-			     }
-			   }
-		}
-
 	}
 }

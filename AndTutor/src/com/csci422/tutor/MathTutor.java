@@ -7,7 +7,7 @@ import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
 
-public class MenuScreen extends Activity {
+public class MathTutor extends Activity {
 
 	Button addition;
 	Button subtraction;
@@ -22,7 +22,7 @@ public class MenuScreen extends Activity {
         addition.setOnClickListener(new View.OnClickListener() {
 			
 			public void onClick(View v) {
-				Intent intent = new Intent(MenuScreen.this, com.csci422.tutor.AdditionActivity.class);
+				Intent intent = new Intent(MathTutor.this, com.csci422.tutor.AdditionActivity.class);
 				intent.putExtra("title", "add");
 				startActivity(intent);
 			}
@@ -32,7 +32,7 @@ public class MenuScreen extends Activity {
         subtraction.setOnClickListener(new View.OnClickListener() {
 			
 			public void onClick(View v) {
-				Intent intent = new Intent(MenuScreen.this, com.csci422.tutor.AdditionActivity.class);
+				Intent intent = new Intent(MathTutor.this, com.csci422.tutor.AdditionActivity.class);
 				intent.putExtra("title", "sub");
 				startActivity(intent);
 			}
@@ -42,7 +42,7 @@ public class MenuScreen extends Activity {
         both.setOnClickListener(new View.OnClickListener() {
 			
 			public void onClick(View v) {
-				Intent intent = new Intent(MenuScreen.this, com.csci422.tutor.AdditionActivity.class);
+				Intent intent = new Intent(MathTutor.this, com.csci422.tutor.AdditionActivity.class);
 				intent.putExtra("title", "both");
 				startActivity(intent);
 			}
