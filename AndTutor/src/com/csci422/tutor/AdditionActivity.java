@@ -29,6 +29,7 @@ import java.util.Random;
 import android.app.Activity;
 import android.content.Intent;
 import android.gesture.Gesture;
+import android.gesture.GestureLibraries;
 import android.gesture.GestureLibrary;
 import android.gesture.GestureOverlayView;
 import android.gesture.GestureOverlayView.OnGesturePerformedListener;
@@ -40,7 +41,7 @@ import android.view.MotionEvent;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class AdditionActivity extends Activity {
+public class AdditionActivity extends Activity implements OnGesturePerformedListener {
 
 	private enum ProblemType {ADDITION, SUBTRACTION, BOTH};
 
@@ -48,8 +49,11 @@ public class AdditionActivity extends Activity {
 	TextView generatedNumber;
 	TextView goalNumber;
 	TextView userInput;
+	
+	// Handles gestures
+	GestureLibrary mLibrary;
 
-	//Maybe add a setting option to change this.
+	// Maybe add a setting option to change this.
 	final int max = 15;
 	Integer goal;
 	Integer generated;
@@ -64,13 +68,21 @@ public class AdditionActivity extends Activity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_addition);
+		
+		// Init the gesture stuff
+		 mLibrary = GestureLibraries.fromRawResource(this, R.raw.gestures);
+		 if (!mLibrary.load()) {
+		   finish();
+		 }
+
+		 GestureOverlayView gestures = (GestureOverlayView) findViewById(R.id.gestures);
+		 gestures.addOnGesturePerformedListener(this);
 
 		Intent intent = getIntent();
 		title = (TextView)findViewById(R.id.title);
 		generatedNumber = (TextView)findViewById(R.id.startingNumber);
 		userInput = (TextView)findViewById(R.id.userInput);
 		goalNumber = (TextView)findViewById(R.id.goalNumber);
-		gestures = new GestureDetector(this, new GestureListener());
 		String newTitle = intent.getStringExtra("title");
 		rand = new Random();
 
@@ -182,61 +194,25 @@ public class AdditionActivity extends Activity {
 
 	@Override
 	public boolean onTouchEvent(MotionEvent e) {
-		return gestures.onTouchEvent(e);
+		return true;
 	}
-
-	private class GestureListener implements GestureDetector.OnGestureListener, OnGesturePerformedListener{
-		GestureLibrary mLibrary;
+	
+	public void onGesturePerformed(GestureOverlayView arg0, Gesture gesture) {
+		// TODO Auto-generated method stub
+		ArrayList<Prediction> predictions = mLibrary.recognize(gesture);
 		
-		public boolean onDown(MotionEvent e) {
-			// TODO Auto-generated method stub
-			return false;
-		}
+		if (predictions.size() > 0 && predictions.get(0).score > 1.0) {
+		     String result = predictions.get(0).name;
 
-		public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX,
-				float velocityY) {
-			// TODO Auto-generated method stub
-			return false;
-		}
-
-		public void onLongPress(MotionEvent e) {
-			//generateProblem();
-		}
-
-		public boolean onScroll(MotionEvent e1, MotionEvent e2,
-				float distanceX, float distanceY) {
-			// TODO Auto-generated method stub
-			return false;
-		}
-
-		public void onShowPress(MotionEvent e) {
-			// TODO Auto-generated method stub
-
-		}
-
-		public boolean onSingleTapUp(MotionEvent e) {
-			// TODO Auto-generated method stub
-			return false;
-		}
-
-		public void onGesturePerformed(GestureOverlayView arg0, Gesture gesture) {
-			// TODO Auto-generated method stub
-			ArrayList<Prediction> predictions = mLibrary.recognize(gesture);
-			
-			if (predictions.size() > 0 && predictions.get(0).score > 1.0) {
-			     String result = predictions.get(0).name;
-
-			     if ("Plus".equalsIgnoreCase(result)) {
-			    	 testAnswer(ProblemType.ADDITION);
-			     }else if ("Minus".equalsIgnoreCase(result)) {
-			    	 testAnswer(ProblemType.SUBTRACTION);
-			     }else if ("Up Swipe".equalsIgnoreCase(result)) {
-					 generated++;
-			     }else if ("Down Swipe".equalsIgnoreCase(result)) {
-			    	 generated--;
-			     }
-			   }
-		}
-
+		     if ("Plus".equalsIgnoreCase(result)) {
+		    	 testAnswer(ProblemType.ADDITION);
+		     }else if ("Minus".equalsIgnoreCase(result)) {
+		    	 testAnswer(ProblemType.SUBTRACTION);
+		     }else if ("Up Swipe".equalsIgnoreCase(result)) {
+				 generated++;
+		     }else if ("Down Swipe".equalsIgnoreCase(result)) {
+		    	 generated--;
+		     }
+		   }
 	}
 }
