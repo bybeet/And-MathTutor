@@ -8,6 +8,13 @@
     <Button 
     	android:layout_height="wrap_content"
      	android:layout_width="fill_parent"
+     	android:id="@+id/how_to"
+     	android:layout_weight="1"
+    	android:text="@string/how_to" />
+    
+    <Button 
+    	android:layout_height="wrap_content"
+     	android:layout_width="fill_parent"
      	android:id="@+id/addition"
      	android:layout_weight="1"
     	android:text="@string/addition" />

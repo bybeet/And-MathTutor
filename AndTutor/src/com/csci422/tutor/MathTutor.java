@@ -9,6 +9,7 @@ import android.widget.Button;
 
 public class MathTutor extends Activity {
 
+	Button howTo;
 	Button addition;
 	Button subtraction;
 	Button both;
@@ -17,6 +18,15 @@ public class MathTutor extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_menu_screen);
+        
+        howTo = (Button)findViewById(R.id.how_to);
+        howTo.setOnClickListener(new View.OnClickListener() {
+			
+			public void onClick(View v) {
+				Intent intent = new Intent(MathTutor.this, com.csci422.tutor.HowTo.class);
+				startActivity(intent);
+			}
+		});
         
         addition = (Button)findViewById(R.id.addition);
         addition.setOnClickListener(new View.OnClickListener() {

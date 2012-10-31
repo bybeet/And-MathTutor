@@ -21,6 +21,11 @@
             </intent-filter>
         </activity>
         <activity
+            android:name=".HowTo"
+            android:screenOrientation="landscape"
+            android:label="@string/title_how_to" >
+        </activity>
+        <activity
             android:name=".AdditionActivity"
             android:label="@string/title_activity_addition"
             android:screenOrientation="landscape" 

@@ -8,5 +8,7 @@
     <string name="subtraction">Subtraction -</string>
     <string name="both">Addition + and Subtraction -</string>
     <string name="title_activity_addition">AdditionActivity</string>
+    <string name="how_to">How To</string>
+    <string name="title_how_to">How To</string>
 
 </resources>
